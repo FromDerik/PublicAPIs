@@ -19,8 +19,6 @@ class APIsViewController: UITableViewController {
         navigationItem.title = category
         
         tableView.register(APICell.self, forCellReuseIdentifier: "cellId")
-//        tableView.rowHeight = 60
-        
         
         if let category = category {
             DataManager.fetchEntries(category: category) { (entries) in

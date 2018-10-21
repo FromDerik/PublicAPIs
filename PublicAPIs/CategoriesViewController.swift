@@ -66,7 +66,7 @@ class CategoriesViewController: UITableViewController {
         if indexPath.section == 0 {
             category = categories[0]
         } else {
-            category = categories[indexPath.row]
+            category = categories[indexPath.row + 1]
         }
         
         let apisViewController = APIsViewController(style: .plain)

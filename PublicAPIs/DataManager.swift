@@ -10,10 +10,10 @@ import Foundation
 
 class DataManager {
     
-    static let baseURL = "https://api.publicapis.org/"
+    static var baseURL = "https://api.publicapis.org/"
     
     static func fetchCategories(completionHandler: @escaping ([String]) -> Void) {
-        guard let url = URL(string: baseURL + "/categories") else { return }
+        guard let url = URL(string: baseURL + "categories") else { return }
         
         let session = URLSession.shared.dataTask(with: url) { (data, res, error) in
             if let error = error {
@@ -37,24 +37,21 @@ class DataManager {
         session.resume()
     }
     
-    static func fetchEntries(title: String? = nil, description: String? = nil, category: String? = nil, authType: String? = nil, https: Bool? = nil, cors: String? = nil, completionHandler: @escaping ([Entry]) -> Void) {
+    static func fetchEntries(category: String? = nil, completionHandler: @escaping ([Entry]) -> Void) {
+        var url: URL?
         
-        guard let url = URL(string: baseURL + "/entries") else { return }
-        var request = URLRequest(url: url)
-        
-        if let title = title { request.addValue(title, forHTTPHeaderField: "title") }
-        if let category = category { request.addValue(category, forHTTPHeaderField: "category") }
-        if let auth = authType { request.addValue(auth, forHTTPHeaderField: "auth") }
-        if let https = https { request.addValue(https.description, forHTTPHeaderField: "https") }
-        if let cors = cors { request.addValue(cors, forHTTPHeaderField: "cors") }
-        
-        if let description = description {
-            if description != "All" {
-                request.addValue(description, forHTTPHeaderField: "description")
+        if var category = category {
+            if category != "All" {
+                category = category.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? category
+                url = URL(string: baseURL + "entries?category=\(category)")
+            } else {
+                url = URL(string: baseURL + "entries")
             }
         }
         
-        let session = URLSession.shared.dataTask(with: request) { (data, res, error) in
+        guard let fetchURL = url else { return }
+        
+        let session = URLSession.shared.dataTask(with: fetchURL) { (data, res, error) in
             if let error = error {
                 print(error)
                 return
